@@ -31,6 +31,23 @@ interface FMRadio : EventTarget {
    */
   readonly attribute double channelWidth;
 
+  /* Abbr. for Programme Identification, 16 bits non-zero value. */
+  readonly attribute unsigned short? pi;
+
+  /**
+   * Abbr. for Extended Country Code. 8 bits non-zero value.
+   */
+  readonly attribute octet? ecc;
+
+  /**
+   * Abbr. for Programme Service Name, it contains max 8 alphanumeric
+   * characters.
+   */
+  readonly attribute DOMString? ps;
+
+  /* Abbr. for Radio Text. */
+  readonly attribute DOMString? rt;
+
   /* Fired when the FM radio is enabled. */
   attribute EventHandler onenabled;
 
@@ -45,6 +62,18 @@ interface FMRadio : EventTarget {
 
   /* Fired when the FM radio's frequency is changed. */
   attribute EventHandler onfrequencychange;
+
+  /* Fired when the Programme identification is changed */
+  attribute EventHandler onpichange;
+
+  /* Fired when the Extended Country Code is changed */
+  attribute EventHandler oneccchange;
+
+  /* Fired when the Programme Service is changed */
+  attribute EventHandler onpschange;
+
+  /* Fired when the Radio Text is changed */
+  attribute EventHandler onrtchange;
 
   /**
    * Power the FM radio off. The disabled event will be fired if this request
