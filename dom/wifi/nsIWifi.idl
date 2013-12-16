@@ -16,6 +16,7 @@ interface nsIWifiScanResult : nsISupports {
     const int32_t WPA_PSK = 0x01;
     const int32_t WPA_EAP = 0x02;
     const int32_t WEP = 0x04;
+    const int32_t WAPI_PSK = 0x08;
     readonly attribute uint32_t capabilities;
 
     /**

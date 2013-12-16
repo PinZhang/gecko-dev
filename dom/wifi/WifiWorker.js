@@ -633,6 +633,7 @@ var WifiManager = (function() {
   // Handle events sent to us by the event worker.
   function handleEvent(event) {
     debug("Event coming in: " + event);
+
     if (event.indexOf("CTRL-EVENT-") !== 0 && event.indexOf("WPS") !== 0) {
       // Handle connection fail exception on WEP-128, while password length
       // is not 5 nor 13 bytes.
@@ -985,7 +986,7 @@ var WifiManager = (function() {
     "ssid", "bssid", "psk", "wep_key0", "wep_key1", "wep_key2", "wep_key3",
     "wep_tx_keyidx", "priority", "key_mgmt", "scan_ssid", "disabled",
     "identity", "password", "auth_alg", "phase1", "phase2", "eap", "pin",
-    "pcsc"
+    "pcsc", "proto"
   ];
 
   manager.getNetworkConfiguration = function(config, callback) {
@@ -1077,6 +1078,7 @@ var WifiManager = (function() {
   manager.addNetwork = function(config, callback) {
     wifiCommand.addNetwork(function (netId) {
       config.netId = netId;
+
       manager.setNetworkConfiguration(config, function (ok) {
         if (!ok) {
           wifiCommand.removeNetwork(netId, function() { callback(false); });
@@ -1233,6 +1235,7 @@ function getNetworkKey(network)
     //   .security[]     : "WPA-PSK" for WPA-PSK
     //                     "WPA-EAP" for WPA-EAP
     //                     "WEP" for WEP
+    //                     "WAPI-PSK" for WAPI-PSK
     //                     "" for OPEN
     //   other keys
     // }
@@ -1250,6 +1253,9 @@ function getNetworkKey(network)
       } else if (security[j] === "WEP") {
         encryption = "WEP";
         break;
+      } else if (security[j] === "WAPI-PSK") {
+        encryption = "WAPI-PSK";
+        break;
       }
     }
   } else if ("key_mgmt" in network) {
@@ -1260,6 +1266,7 @@ function getNetworkKey(network)
     //   .key_mgmt       : Encryption type
     //                     "WPA-PSK" for WPA-PSK
     //                     "WPA-EAP" for WPA-EAP
+    //                     "WAPI-PSK" for WAPI-PSK
     //                     "NONE" for WEP/OPEN
     //   .auth_alg       : Encryption algorithm(WEP mode only)
     //                     "OPEN_SHARED" for WEP
@@ -1273,6 +1280,8 @@ function getNetworkKey(network)
       encryption = "WPA-PSK";
     } else if (key_mgmt == "WPA-EAP") {
       encryption = "WPA-EAP";
+    } else if (key_mgmt == "WAPI-PSK") {
+      encryption = "WAPI-PSK";
     } else if (key_mgmt == "NONE" && auth_alg === "OPEN SHARED") {
       encryption = "WEP";
     }
@@ -1280,7 +1289,7 @@ function getNetworkKey(network)
 
   // ssid here must be dequoted, and it's safer to esacpe it.
   // encryption won't be empty and always be assigned one of the followings :
-  // "OPEN"/"WEP"/"WPA-PSK"/"WPA-EAP".
+  // "OPEN"/"WEP"/"WPA-PSK"/"WPA-EAP"/"WAPI-PSK".
   // So for a invalid network object, the returned key will be "OPEN".
   return escape(ssid) + encryption;
 }
@@ -1296,6 +1305,8 @@ function getKeyManagement(flags) {
     types.push("WPA-EAP");
   if (/\[WEP/.test(flags))
     types.push("WEP");
+  if (/\[WAPI/.test(flags))
+    types.push("WAPI-PSK");
   return types;
 }
 
@@ -1349,6 +1360,7 @@ Network.api = {
   security: "r",
   capabilities: "r",
   known: "r",
+  proto: "r",
 
   password: "rw",
   keyManagement: "rw",
@@ -1629,6 +1641,10 @@ function WifiWorker() {
     if ("phase2" in net)
       net.phase2 = quote(net.phase2);
 
+    if (net.key_mgmt == "WAPI-PSK") {
+      net.proto = configured.proto = "WAPI";
+    }
+
     return net;
   };
 
@@ -1854,6 +1870,8 @@ function WifiWorker() {
         // about getting stuck while scanning.
         if (!WifiManager.backgroundScanEnabled && WifiManager.enabled)
           startScanStuckTimer();
+        break;
+      default:
         break;
     }
   };
@@ -2454,8 +2472,10 @@ WifiWorker.prototype = {
               result[id] |= Ci.nsIWifiScanResult.WPA_EAP;
             } else if (security[j] === "WEP") {
               result[id] |= Ci.nsIWifiScanResult.WEP;
+            } else if (security[j] === "WAPI-PSK") {
+              result[id] |= Ci.nsIWifiScanResult.WAPI_PSK;
             } else {
-             result[id] = 0;
+              result[id] = 0;
             }
           }
         } else {
