@@ -18,6 +18,8 @@ FMRadioChild::FMRadioChild()
   : mEnabled(false)
   , mFrequency(0)
   , mObserverList(FMRadioEventObserverList())
+  , mPi(0)
+  , mEcc(0)
 {
   MOZ_COUNT_CTOR(FMRadioChild);
 
@@ -67,6 +69,30 @@ double
 FMRadioChild::GetChannelWidth() const
 {
   return mChannelWidth;
+}
+
+uint16_t
+FMRadioChild::GetPi() const
+{
+  return mPi;
+}
+
+uint8_t
+FMRadioChild::GetEcc() const
+{
+  return mEcc;
+}
+
+void
+FMRadioChild::GetPs(nsString& aPs) const
+{
+  aPs = mPs;
+}
+
+void
+FMRadioChild::GetRt(nsString& aRt) const
+{
+  aRt = mRt;
 }
 
 void
@@ -142,6 +168,33 @@ FMRadioChild::RecvNotifyEnabledChanged(const bool& aEnabled,
   mEnabled = aEnabled;
   mFrequency = aFrequency;
   NotifyFMRadioEvent(EnabledChanged);
+  return true;
+}
+
+bool
+FMRadioChild::RecvNotifyRDSChanged(const uint16_t& aPi, const uint8_t& aEcc,
+                                   const nsString& aPs, const nsString& aRt)
+{
+  if (mPi != aPi) {
+    mPi = aPi;
+    NotifyFMRadioEvent(PiChanged);
+  }
+
+  if (mEcc != aEcc) {
+    mEcc = aEcc;
+    NotifyFMRadioEvent(EccChanged);
+  }
+
+  if (mPs != aPs) {
+    mPs = aPs;
+    NotifyFMRadioEvent(PsChanged);
+  }
+
+  if (mRt != aRt) {
+    mRt = aRt;
+    NotifyFMRadioEvent(RtChanged);
+  }
+
   return true;
 }
 

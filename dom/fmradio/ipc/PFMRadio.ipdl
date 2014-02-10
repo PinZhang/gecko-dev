@@ -50,6 +50,12 @@ struct StatusInfo
   double upperBound;
   double lowerBound;
   double channelWidth;
+  
+  // rds
+  uint16_t pi;
+  uint8_t ecc;
+  nsString ps;
+  nsString rt;
 };
 
 sync protocol PFMRadio
@@ -66,6 +72,10 @@ child:
    * Sent when the power state of FM radio HW is changed.
    */
   NotifyEnabledChanged(bool enabled, double frequency);
+  /**
+   * Sent when the RDS related values are changed.
+   */
+  NotifyRDSChanged(uint16_t pi, uint8_t ecc, nsString ps, nsString rt);
 
   __delete__();
 

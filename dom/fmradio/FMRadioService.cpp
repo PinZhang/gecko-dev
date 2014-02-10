@@ -91,6 +91,8 @@ FMRadioService::FMRadioService()
   nsCOMPtr<nsIObserverService> obs = services::GetObserverService();
 
   RegisterFMRadioObserver(this);
+
+  // TODO register rds observer
 }
 
 FMRadioService::~FMRadioService()
@@ -368,6 +370,32 @@ FMRadioService::GetChannelWidth() const
 {
   MOZ_ASSERT(NS_IsMainThread(), "Wrong thread!");
   return mChannelWidthInKHz / 1000.0;
+}
+
+uint16_t
+FMRadioService::GetPi() const
+{
+  // TODO get pi from gonk
+  return 0u;
+}
+
+uint8_t
+FMRadioService::GetEcc() const
+{
+  // TODO get ecc from gonk
+  return 0u;
+}
+
+void
+FMRadioService::GetPs(nsString& aPs) const
+{
+  // TODO get ps from gonk
+}
+
+void
+FMRadioService::GetRt(nsString& aRt) const
+{
+  // TODO get rt from gonk
 }
 
 void

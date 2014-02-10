@@ -65,6 +65,14 @@ public:
 
   double ChannelWidth() const;
 
+  Nullable<uint16_t> GetPi() const;
+
+  Nullable<uint8_t> GetEcc() const;
+
+  void GetPs(DOMString& aPs) const;
+
+  void GetRt(DOMString& aRt) const;
+
   already_AddRefed<DOMRequest> Enable(double aFrequency);
 
   already_AddRefed<DOMRequest> Disable();
@@ -81,6 +89,10 @@ public:
   IMPL_EVENT_HANDLER(disabled);
   IMPL_EVENT_HANDLER(antennaavailablechange);
   IMPL_EVENT_HANDLER(frequencychange);
+  IMPL_EVENT_HANDLER(pichange);
+  IMPL_EVENT_HANDLER(eccchange);
+  IMPL_EVENT_HANDLER(pschange);
+  IMPL_EVENT_HANDLER(rtchange);
 
   // nsIAudioChannelAgentCallback
   NS_IMETHOD CanPlayChanged(int32_t aCanPlay);

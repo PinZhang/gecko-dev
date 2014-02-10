@@ -99,6 +99,11 @@ public:
   virtual double GetFrequencyLowerBound() const = 0;
   virtual double GetChannelWidth() const = 0;
 
+  virtual uint16_t GetPi() const = 0;
+  virtual uint8_t GetEcc() const = 0;
+  virtual void GetPs(nsString& aPs) const = 0;
+  virtual void GetRt(nsString& aRt) const = 0;
+
   virtual void Enable(double aFrequency, FMRadioReplyRunnable* aReplyRunnable) = 0;
   virtual void Disable(FMRadioReplyRunnable* aReplyRunnable) = 0;
   virtual void SetFrequency(double aFrequency, FMRadioReplyRunnable* aReplyRunnable) = 0;
@@ -153,6 +158,11 @@ public:
   virtual double GetFrequencyUpperBound() const MOZ_OVERRIDE;
   virtual double GetFrequencyLowerBound() const MOZ_OVERRIDE;
   virtual double GetChannelWidth() const MOZ_OVERRIDE;
+
+  virtual uint16_t GetPi() const MOZ_OVERRIDE;
+  virtual uint8_t GetEcc() const MOZ_OVERRIDE;
+  virtual void GetPs(nsString& aPs) const MOZ_OVERRIDE;
+  virtual void GetRt(nsString& aRt) const MOZ_OVERRIDE;
 
   virtual void Enable(double aFrequency,
                       FMRadioReplyRunnable* aReplyRunnable) MOZ_OVERRIDE;

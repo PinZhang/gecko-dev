@@ -91,6 +91,21 @@ FMRadioParent::Notify(const FMRadioEventType& aType)
         IFMRadioService::Singleton()->IsEnabled(),
         IFMRadioService::Singleton()->GetFrequency());
       break;
+    case PiChanged:
+    case PsChanged:
+    case EccChanged:
+    case RtChanged:
+    {
+      nsString ps;
+      nsString rt;
+      IFMRadioService::Singleton()->GetPs(ps);
+      IFMRadioService::Singleton()->GetRt(rt);
+      unused << SendNotifyRDSChanged(
+        IFMRadioService::Singleton()->GetPi(),
+        IFMRadioService::Singleton()->GetEcc(),
+        ps, rt);
+      break;
+    }
     default:
       NS_RUNTIMEABORT("not reached");
       break;

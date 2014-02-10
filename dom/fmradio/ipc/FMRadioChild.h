@@ -39,6 +39,11 @@ public:
   virtual double GetFrequencyLowerBound() const MOZ_OVERRIDE;
   virtual double GetChannelWidth() const MOZ_OVERRIDE;
 
+  virtual uint16_t GetPi() const MOZ_OVERRIDE;
+  virtual uint8_t GetEcc() const MOZ_OVERRIDE;
+  virtual void GetPs(nsString& aPs) const MOZ_OVERRIDE;
+  virtual void GetRt(nsString& aRt) const MOZ_OVERRIDE;
+
   virtual void Enable(double aFrequency,
                       FMRadioReplyRunnable* aReplyRunnable) MOZ_OVERRIDE;
   virtual void Disable(FMRadioReplyRunnable* aReplyRunnable) MOZ_OVERRIDE;
@@ -64,6 +69,10 @@ public:
   RecvNotifyEnabledChanged(const bool& aEnabled,
                            const double& aFrequency) MOZ_OVERRIDE;
 
+  virtual bool
+  RecvNotifyRDSChanged(const uint16_t& aPi, const uint8_t& aEcc,
+                       const nsString& aPs, const nsString& aRt) MOZ_OVERRIDE;
+
   virtual PFMRadioRequestChild*
   AllocPFMRadioRequestChild(const FMRadioRequestArgs& aArgs) MOZ_OVERRIDE;
 
@@ -82,6 +91,11 @@ private:
   double mUpperBound;
   double mLowerBound;
   double mChannelWidth;
+
+  uint16_t mPi;
+  uint8_t mEcc;
+  nsString mPs;
+  nsString mRt;
 
   FMRadioEventObserverList mObserverList;
 

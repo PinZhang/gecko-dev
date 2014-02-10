@@ -219,6 +219,18 @@ FMRadio::Notify(const FMRadioEventType& aType)
         DispatchTrustedEvent(NS_LITERAL_STRING("disabled"));
       }
       break;
+    case PiChanged:
+      DispatchTrustedEvent(NS_LITERAL_STRING("pichange"));
+      break;
+    case EccChanged:
+      DispatchTrustedEvent(NS_LITERAL_STRING("eccchange"));
+      break;
+    case PsChanged:
+      DispatchTrustedEvent(NS_LITERAL_STRING("pschange"));
+      break;
+    case RtChanged:
+      DispatchTrustedEvent(NS_LITERAL_STRING("rtchange"));
+      break;
     default:
       MOZ_CRASH();
   }
@@ -262,6 +274,56 @@ double
 FMRadio::ChannelWidth() const
 {
   return IFMRadioService::Singleton()->GetChannelWidth();
+}
+
+Nullable<uint16_t>
+FMRadio::GetPi() const
+{
+  if (!Enabled())
+    return Nullable<uint16_t>();
+
+  int16_t pi = IFMRadioService::Singleton()->GetPi();
+  if (pi == 0u)
+    return Nullable<uint16_t>();
+
+  return Nullable<uint16_t>(pi);
+}
+
+Nullable<uint8_t>
+FMRadio::GetEcc() const
+{
+  if (!Enabled())
+      return Nullable<uint8_t>();
+
+  int16_t ecc = IFMRadioService::Singleton()->GetEcc();
+  if (ecc == 0u)
+    return Nullable<uint8_t>();
+
+  return Nullable<uint8_t>(ecc);
+}
+
+void
+FMRadio::GetPs(DOMString& aPs) const
+{
+  if (!Enabled()) {
+    aPs.SetNull();
+  } else {
+    nsString ps;
+    IFMRadioService::Singleton()->GetPs(ps);
+    aPs.SetStringBuffer(nsStringBuffer::FromString(ps), ps.Length());
+  }
+}
+
+void
+FMRadio::GetRt(DOMString& aRt) const
+{
+  if (!Enabled()) {
+    aRt.SetNull();
+  } else {
+    nsString rt;
+    IFMRadioService::Singleton()->GetRt(rt);
+    aRt.SetStringBuffer(nsStringBuffer::FromString(rt), rt.Length());
+  }
 }
 
 already_AddRefed<DOMRequest>
